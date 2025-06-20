@@ -11,7 +11,7 @@ class SizeController {
 
   SizeController._init();
 
-  final RefionArea _regionArea = RefionArea();
+  final RegionArea _regionArea = RegionArea();
   Size mapSize = Size.zero;
 
   void addBounds(Rect bound) {

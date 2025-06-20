@@ -12,6 +12,7 @@ class InteractableSvg extends StatefulWidget {
   final String svgAddress;
   final String fileName;
   final Function(Region? region) onChanged;
+  final List<String> initialSelectedRegion;
   final Color? strokeColor;
   final double? strokeWidth;
   final Color? selectedColor;
@@ -27,6 +28,7 @@ class InteractableSvg extends StatefulWidget {
     Key? key,
     required this.svgAddress,
     required this.onChanged,
+    this.initialSelectedRegion = const [],
     this.width,
     this.height,
     this.strokeColor,
@@ -49,6 +51,7 @@ class InteractableSvg extends StatefulWidget {
       Key? key,
       required this.svgAddress,
       required this.onChanged,
+      this.initialSelectedRegion = const [],
       this.width,
       this.height,
       this.strokeColor,
@@ -69,6 +72,7 @@ class InteractableSvg extends StatefulWidget {
       {Key? key,
       required this.svgAddress,
       required this.onChanged,
+      this.initialSelectedRegion = const [],
       this.width,
       this.height,
       this.strokeColor,
@@ -120,6 +124,17 @@ class InteractableSvgState extends State<InteractableSvg> {
     setState(() {
       _regionList.addAll(list);
       mapSize = _sizeController.mapSize;
+    });
+
+    for(var reg in _regionList){
+      if(widget.initialSelectedRegion.contains(reg.id)){
+        selectedRegion.removeWhere((element) => element.id == reg.id);
+        selectedRegion.add(reg);
+      }
+    }
+
+    setState(() {
+      selectedRegion;
     });
   }
 
