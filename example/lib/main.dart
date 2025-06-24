@@ -55,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
               constrained: true,
               child: InteractableSvg(
                 key: mapKey,
+                selectedRegion: ValueNotifier([]),
                 svgAddress: "assets/floor_map.svg",
                 onChanged: (region) {
                   setState(() {

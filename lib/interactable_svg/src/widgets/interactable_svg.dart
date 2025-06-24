@@ -12,7 +12,7 @@ class InteractableSvg extends StatefulWidget {
   final String svgAddress;
   final String fileName;
   final Function(Region? region) onChanged;
-  final List<String> initialSelectedRegion;
+  final ValueNotifier<List<String>> selectedRegion;
   final Color? strokeColor;
   final double? strokeWidth;
   final Color? selectedColor;
@@ -28,7 +28,7 @@ class InteractableSvg extends StatefulWidget {
     Key? key,
     required this.svgAddress,
     required this.onChanged,
-    this.initialSelectedRegion = const [],
+    required this.selectedRegion,
     this.width,
     this.height,
     this.strokeColor,
@@ -51,7 +51,7 @@ class InteractableSvg extends StatefulWidget {
       Key? key,
       required this.svgAddress,
       required this.onChanged,
-      this.initialSelectedRegion = const [],
+      required this.selectedRegion,
       this.width,
       this.height,
       this.strokeColor,
@@ -72,7 +72,7 @@ class InteractableSvg extends StatefulWidget {
       {Key? key,
       required this.svgAddress,
       required this.onChanged,
-      this.initialSelectedRegion = const [],
+      required this.selectedRegion,
       this.width,
       this.height,
       this.strokeColor,
@@ -97,13 +97,14 @@ class InteractableSvg extends StatefulWidget {
 class InteractableSvgState extends State<InteractableSvg> {
   final List<Region> _regionList = [];
 
-  List<Region> selectedRegion = [];
+  late ValueNotifier<List<String>> selectedRegion;
   final _sizeController = SizeController.instance;
   Size? mapSize;
 
   @override
   void initState() {
     super.initState();
+    selectedRegion = widget.selectedRegion;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadRegionList();
     });
@@ -126,22 +127,18 @@ class InteractableSvgState extends State<InteractableSvg> {
       mapSize = _sizeController.mapSize;
     });
 
-    for(var reg in _regionList){
-      if(widget.initialSelectedRegion.contains(reg.id)){
-        selectedRegion.removeWhere((element) => element.id == reg.id);
-        selectedRegion.add(reg);
+    for(var reg in selectedRegion.value){
+      if(_regionList.where((element) => element.id == reg).isEmpty){
+        selectedRegion.value.removeWhere((element) => element == reg);
       }
     }
-
-    setState(() {
-      selectedRegion;
-    });
+    
+    selectedRegion.notifyListeners();
   }
 
   void clearSelect() {
-    setState(() {
-      selectedRegion.clear();
-    });
+    selectedRegion.value.clear();
+    selectedRegion.notifyListeners();
   }
 
   @override
@@ -159,25 +156,28 @@ class InteractableSvgState extends State<InteractableSvg> {
       onTap: () => (widget.toggleEnable ?? false)
           ? toggleButton(region)
           : holdButton(region),
-      child: CustomPaint(
-        isComplex: true,
-        foregroundPainter: RegionPainter(
-            region: region,
-            selectedRegion: selectedRegion,
-            dotColor: widget.dotColor,
-            selectedColor: widget.selectedColor,
-            strokeColor: widget.strokeColor,
-            centerDotEnable: widget.centerDotEnable,
-            centerTextEnable: widget.centerTextEnable,
-            centerTextStyle: widget.centerTextStyle,
-            strokeWidth: widget.strokeWidth,
-            unSelectableId: widget.unSelectableId),
-        child: Container(
-          width: widget.width ?? double.infinity,
-          height: widget.height ?? double.infinity,
-          constraints: BoxConstraints(
-              maxWidth: mapSize?.width ?? 0, maxHeight: mapSize?.height ?? 0),
-          alignment: Alignment.center,
+      child: ValueListenableBuilder(
+        valueListenable: selectedRegion,
+        builder: (ctx, selected, child) => CustomPaint(
+          isComplex: true,
+          foregroundPainter: RegionPainter(
+              region: region,
+              selectedRegion: selected,
+              dotColor: widget.dotColor,
+              selectedColor: widget.selectedColor,
+              strokeColor: widget.strokeColor,
+              centerDotEnable: widget.centerDotEnable,
+              centerTextEnable: widget.centerTextEnable,
+              centerTextStyle: widget.centerTextStyle,
+              strokeWidth: widget.strokeWidth,
+              unSelectableId: widget.unSelectableId),
+          child: Container(
+            width: widget.width ?? double.infinity,
+            height: widget.height ?? double.infinity,
+            constraints: BoxConstraints(
+                maxWidth: mapSize?.width ?? 0, maxHeight: mapSize?.height ?? 0),
+            alignment: Alignment.center,
+          ),
         ),
       ),
     );
@@ -185,35 +185,31 @@ class InteractableSvgState extends State<InteractableSvg> {
 
   void toggleButton(Region region) {
     if (region.id != widget.unSelectableId) {
-      setState(() {
-        if (selectedRegion.contains(region)) {
-          selectedRegion.remove(region);
+      if (selectedRegion.value.where((element) => element == region.id).isNotEmpty) {
+        selectedRegion.value.removeWhere((element) => element == region.id);
+      } else {
+        if (widget.isMultiSelectable ?? false) {
+          selectedRegion.value.add(region.id);
         } else {
-          if (widget.isMultiSelectable ?? false) {
-            selectedRegion.add(region);
-          } else {
-            selectedRegion.clear();
-            selectedRegion.add(region);
-          }
+          selectedRegion.value.clear();
+          selectedRegion.value.add(region.id);
         }
-        widget.onChanged.call(region);
-      });
+      }
+      selectedRegion.notifyListeners();
+      widget.onChanged.call(region);
     }
   }
 
   void holdButton(Region region) {
     if (region.id != widget.unSelectableId) {
-      setState(() {
-        if (widget.isMultiSelectable ?? false) {
-          selectedRegion.add(region);
-          widget.onChanged.call(region);
-        } else {
-          selectedRegion.clear();
-          selectedRegion.add(region);
-
-          widget.onChanged.call(region);
-        }
-      });
+      if (widget.isMultiSelectable ?? false) {
+        selectedRegion.value.add(region.id);
+      } else {
+        selectedRegion.value.clear();
+        selectedRegion.value.add(region.id);
+      }
+      selectedRegion.notifyListeners();
+      widget.onChanged.call(region);
     }
   }
 }
