@@ -70,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 selectedColor: Colors.red.withOpacity(0.5),
                 strokeColor: Colors.blue,
                 unSelectableId: "bg",
-                centerDotEnable: true,
                 centerTextEnable: true,
                 strokeWidth: 2.0,
                 centerTextStyle: const TextStyle(

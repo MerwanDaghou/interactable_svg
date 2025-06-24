@@ -10,7 +10,7 @@ class RegionPainter extends CustomPainter {
   final Color? selectedColor;
   final Color? dotColor;
   final double? strokeWidth;
-  final bool? centerDotEnable;
+  final double? centerDotWidth;
   final bool? centerTextEnable;
   final TextStyle? centerTextStyle;
   final String? unSelectableId;
@@ -25,7 +25,7 @@ class RegionPainter extends CustomPainter {
     this.selectedColor,
     this.strokeColor,
     this.dotColor,
-    this.centerDotEnable,
+    this.centerDotWidth = 3,
     this.centerTextEnable,
     this.centerTextStyle,
     this.strokeWidth,
@@ -57,8 +57,8 @@ class RegionPainter extends CustomPainter {
     if (selectedRegion.where((element) => element == region.id).isNotEmpty) {
       canvas.drawPath(region.path, selectedPen);
     }
-    if ((centerDotEnable ?? false) && region.id != unSelectableId) {
-      canvas.drawCircle(bounds.center, 3.0, redDot);
+    if (centerDotWidth != null && region.id != unSelectableId) {
+      canvas.drawCircle(bounds.center, centerDotWidth!, redDot);
     }
     if ((centerTextEnable ?? false) && region.id != unSelectableId) {
       TextSpan span = TextSpan(

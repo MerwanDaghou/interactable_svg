@@ -19,7 +19,7 @@ class InteractableSvg extends StatefulWidget {
   final Color? dotColor;
   final bool? toggleEnable;
   final String? unSelectableId;
-  final bool? centerDotEnable;
+  final double? centerDotWidth;
   final bool? centerTextEnable;
   final bool? isMultiSelectable;
   final TextStyle? centerTextStyle;
@@ -36,7 +36,7 @@ class InteractableSvg extends StatefulWidget {
     this.selectedColor,
     this.dotColor,
     this.unSelectableId,
-    this.centerDotEnable,
+    this.centerDotWidth = 3,
     this.centerTextEnable,
     this.centerTextStyle,
     this.toggleEnable,
@@ -59,7 +59,7 @@ class InteractableSvg extends StatefulWidget {
       this.selectedColor,
       this.dotColor,
       this.unSelectableId,
-      this.centerDotEnable,
+      this.centerDotWidth = 3,
       this.centerTextEnable,
       this.centerTextStyle,
       this.toggleEnable,
@@ -80,7 +80,7 @@ class InteractableSvg extends StatefulWidget {
       this.selectedColor,
       this.dotColor,
       this.unSelectableId,
-      this.centerDotEnable,
+      this.centerDotWidth = 3,
       this.centerTextEnable,
       this.centerTextStyle,
       this.toggleEnable,
@@ -166,7 +166,7 @@ class InteractableSvgState extends State<InteractableSvg> {
               dotColor: widget.dotColor,
               selectedColor: widget.selectedColor,
               strokeColor: widget.strokeColor,
-              centerDotEnable: widget.centerDotEnable,
+              centerDotWidth: widget.centerDotWidth,
               centerTextEnable: widget.centerTextEnable,
               centerTextStyle: widget.centerTextStyle,
               strokeWidth: widget.strokeWidth,
