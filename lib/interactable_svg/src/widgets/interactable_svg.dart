@@ -127,15 +127,16 @@ class InteractableSvgState extends State<InteractableSvg> {
       mapSize = _sizeController.mapSize;
     });
 
+    /*
     List<String> initialSelectedRegion = List.from(selectedRegion.value);
-
     for(var reg in initialSelectedRegion){
-      if(_regionList.where((element) => element.id == reg).isEmpty){
+      if(reg != 'FR' || _regionList.where((element) => element.id == reg).isEmpty){
         selectedRegion.value.removeWhere((element) => element == reg);
       }
     }
-    
     selectedRegion.notifyListeners();
+    
+     */
   }
 
   void clearSelect() {
